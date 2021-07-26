@@ -1,0 +1,1120 @@
+@charset "UTF-8";
+
+/* =======================================================================================================
+# mixin
+======================================================================================================== */
+//マップ型変数breakpointsを定義
+$breakpoints: (
+//キー　　値
+    'sm': 'screen and (max-width: 767px)', //767px以下（スマホ）用の表示
+    'md': 'screen and (min-width: 768px)' //768px以上（タブレット・PC）用の表示
+) !default;
+
+//メディアクエリ用のmixinを定義。デフォ値はmd
+@mixin mq($breakpoint: md) {
+    //map-get(マップ型変数, キー)で値を取得
+    @media #{map-get($breakpoints, $breakpoint)} {
+    //この中をカスタムできる
+    @content;
+    }
+}
+
+/* =======================================================================================================
+# color
+======================================================================================================== */
+$primary-color: #3EA1D1;
+$font-color: #333;
+
+/* =======================================================================================================
+# common
+======================================================================================================== */
+// スマホの場合はis-pcクラスは表示されない(pcのみ表示させたい要素にis-pcクラスをつける)
+@include mq('sm') {
+    .is-pc {
+        display: none;
+    }
+}
+
+// pcの場合はis-spクラスは表示されない(spのみ表示させたい要素にis-spクラスをつける)
+@include mq('md') {
+    .is-sp {
+        display: none;
+    }
+}
+
+body {
+    font-size: 16px;
+    color: $font-color;
+    font-family: "ヒラギノ明朝 ProN", serif;
+    line-height: 1.6875;
+}
+
+img {
+    // 外枠に対してwidth100%
+    width: 100%;
+}
+
+$layer: (
+    header: 100,
+);
+
+.inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    // reset.cssでbox-sizing: border-box;となっているため、paddingを含めて1200pxになるので、box-sizing: content-box;にする
+    box-sizing: content-box;
+
+    @include mq('sm') {
+        padding: 0 15px;
+    }
+}
+
+/* =======================================================================================================
+# header
+======================================================================================================== */
+.header {
+    background: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: map-get($layer, 'header');
+
+    // .drawer--rightが一番頭にある.drawer-hamburgerに対してのスタイル
+    // cssだと「.drawer--right .header .drawer-hamburger {right: 3px;}」になる
+    .drawer-hamburger {
+        .drawer--right & {
+            right: 3px;
+        }
+    }
+
+    .drawer-hamburger-icon {
+        background: $primary-color;
+
+        &::before,
+        &::after {
+            background: $primary-color;
+        }
+
+        // .drawer-openが一番頭にある.drawer-hamburger-iconに対してのスタイル
+        // cssだと「.drawer-open .header .drawer-hamburger-icon {background: transparent;}」になる
+        .drawer-open & {
+            background: transparent;
+        }
+    }
+}
+
+.header-inner {
+    display: flex;
+    // 全てのboxの縦方向の揃え位置を指定
+    align-items: center;
+
+    @include mq('sm') {
+        height: 60px;
+    }
+}
+
+.header-nav {
+    margin-left: auto;
+    
+    @include mq('sm') {
+        // .drawer-navにposition: fixed;がついているため、topが使える
+        top: 60px;
+        background: $primary-color;
+    }
+    
+    .header-nav-list {
+        @include mq('md') {
+            display: flex;
+        }
+        
+        
+    }
+}
+
+.header-logo {
+    width: 120px;
+}
+
+.header-nav-item {
+    // 隣接セレクタを使うことで最初の要素にはmargin-leftは効かない
+    & + .header-nav-item {
+        @include mq('md') {
+            margin-left: 46px;
+        }
+    }
+}
+
+// aタグに高さや行間を指定した理由は、クリックできる領域を広げるため
+.header-nav-item-link {
+    display: block;
+    color: $font-color;
+    height: 70px;
+    line-height: 70px;
+    letter-spacing: .1em;
+    
+    @include mq('sm') {
+        color: #fff;
+        font-size: 18px;
+        text-align: right;
+        padding: 24px 15px;
+        height: 60px;
+        line-height: 60px;
+    }
+    
+    // スマホ版はhoverしない
+    @include mq('md') {
+        transition: color .4s;
+        
+        &:hover {
+            color: $primary-color;
+        }
+    }
+}
+
+
+// mainは多いから先にfooterを作る
+/* =======================================================================================================
+# footer
+======================================================================================================== */
+.footer {
+    background: #F7F7F7;
+    padding: 42px 40px 12px;
+
+    @include mq('sm') {
+        padding: 36px 0 14px;
+    }
+}
+
+.footer-logo {
+    width: 120px;
+    margin: 0 auto;
+}
+
+.footer-nav-list {
+    margin-top: 8px;
+
+    @include mq('sm') {
+        text-align: center;
+        margin-top: 16px;
+    }
+    
+    @include mq('md') {
+        display: flex;
+        //  box全体の横方向の揃え位置を指定
+        justify-content: center;
+    }
+}
+
+.footer-nav-item {
+    // 隣接セレクタを使うことで最初の要素にはmargin-leftは効かない
+    & + .footer-nav-item {
+        @include mq('md') {
+            margin-left: 30px;
+        }
+    }
+}
+
+.footer-nav-item-link {
+    font-size: 12px;
+    color: $font-color;
+    display: block;
+    // クリック領域は縦横44px以上と推奨されている
+    padding: 1em 0;
+
+    @include mq('sm') {
+        padding: .3em 0;
+    }
+
+    @include mq('md') {
+        transition: opacity .4s;
+
+        &:hover {
+            opacity: .7;
+        }
+    }
+}
+
+.footer-sns-list {
+    text-align: center;
+
+    @include mq('sm') {
+        margin-top: 14px;
+    }
+}
+
+.footer-sns-item {
+    // flex以外の横並びにする方法の一つ
+    display: inline-block;
+
+    // 隣接セレクタを使うことで最初の要素にはmargin-leftは効かない
+    & + .footer-sns-item {
+        margin-left: 10px;
+    }
+}
+
+.footer-sns-item-link {
+    color: $primary-color;
+    font-size: 24px;
+    display: block;
+    // クリック領域は縦横44px以上と推奨されている
+    padding: .1em .5em;
+
+    @include mq('md') {
+        transition: opacity .4s;
+
+        &:hover {
+            opacity: .7;
+        }
+    }
+}
+
+.footer-copyright {
+    color: #888;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+
+    @include mq('sm') {
+        margin-top: 5px;
+    }
+}
+
+/* =======================================================================================================
+# main
+======================================================================================================== */
+
+/* =======================================================================================================
+# common(main)
+======================================================================================================== */
+.main {
+    padding-top: 70px;
+    
+    @include mq('sm') {
+        padding-top: 60px;
+    }
+}
+
+.section {
+    margin-top: 160px;
+
+    @include mq('sm') {
+        margin-top: 96px;
+    }
+}
+
+.section-title {
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    // margin-topを160pxに指定しているため、line-heightをいじると誤差が生まれてしまうため、line-heightは1にしておく
+    line-height: 1;
+
+    @include mq('sm') {
+        font-size: 30px;
+    }
+
+    &::after {
+        content: "";
+        display: block;
+        height: 1px;
+        width: 60px;
+        background: $primary-color;
+        margin: 16px auto;
+    }
+}
+
+.util-btn {
+    font-size: 14px;
+    letter-spacing: .1em;
+    color: $primary-color;
+    border: solid 1px $primary-color;
+    background: #fff;
+    // btnを囲っている箱に対してtext-alignをcenterにすることでbtnの配置を調整することができるため、displayはinline-blockにする
+    display: inline-block;
+    padding: 10px 54px;
+    transition: background-color .4s, color .4s;
+
+    // contactの送信ボタンは全て入力し終わった時に.-activeをつけてこのスタイルを反映させる
+    &.-active {
+        background: $primary-color;
+        color: #fff;
+    }
+
+    // スマホ版はhoverしない
+    @include mq('md') {
+        // .-submitがついていない要素をhoverした時のスタイル.-submitがついている要素にはこのスタイルは反映されない)
+        &:not(.-submit) {
+            &:hover {
+                background: $primary-color;
+                color: #fff;
+            }
+        }
+    }
+}
+
+/* =======================================================================================================
+# top
+======================================================================================================== */
+.top {
+    position: relative;
+}
+
+.top-picture {
+    @include mq('sm') {
+        // ブラウザ幅に合わせて画像のアスペクト比を維持したまま拡大縮小をする際には、padding-topを"%"で指定します。
+        // --画像の切り替えをbackground-imageで指定したい場合
+        // --画像などをiframeを埋め込みたい場合
+        // --画角の違う画像を一定の画角に収めたい場合
+        // 以上の3つはこの方法で指定する必要があります。
+        // ↓使い方↓
+        // １. 比率を固定したい要素をdivなどのタグで囲む
+        // ２. 画角を計算し、対象の要素にpadding-topで指定する
+        // 画角計算は「高さ ÷ 幅 × 100」です。
+        // 今回の場合「414 / 345 * 100 = 120%」になる
+        padding-top: 120%;
+        background: url(../img/SP/top.png) center center / cover;
+    }
+
+    @include mq('md') {
+        // ブラウザ幅に合わせて画像のアスペクト比を維持したまま拡大縮小をする際には、padding-topを"%"で指定します。
+        // --画像の切り替えをbackground-imageで指定したい場合
+        // --画像などをiframeを埋め込みたい場合
+        // --画角の違う画像を一定の画角に収めたい場合
+        // 以上の3つはこの方法で指定する必要があります。
+        // ↓使い方↓
+        // １. 比率を固定したい要素をdivなどのタグで囲む
+        // ２. 画角を計算し、対象の要素にpadding-topで指定する
+        // 画角計算は「高さ ÷ 幅 × 100」です。
+        // 今回の場合「660 / 1200 * 100 = 55%」になる
+        padding-top: 55%;
+        // background-sizeは画像の幅が1200pxのうちの990pxなので、990 / 1200 = 82.5%
+        // background-sizeを%で指定することで画面幅が1200px以下でも画像の比率を保つことができる
+        background: url(../img/PC/top.png) top right / 82.5% no-repeat;
+    }
+}
+
+.top-message {
+    @include mq('sm') {
+        margin-top: 31px;
+    }
+
+    @include mq('md') {
+        position: absolute;
+        background: #fff;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        padding: 82px 44px 90px 40px;
+    }
+}
+
+.top-message-title {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.top-message-text {
+    margin-top: 18px;
+}
+
+/* =======================================================================================================
+# concept
+======================================================================================================== */
+.concept-inner {
+    margin-top: 64px;
+
+    @include mq('sm') {
+        margin-top: 46px;
+    }
+
+    @include mq('md') {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.concept-picture {
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        flex: 0 0 50%;
+    }
+}
+
+.concept-message {
+    @include mq('sm') {
+        margin-top: 35px;
+    }
+
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 縮み率を１にすることで幅が50%の幅が余っていなかったら縮めるため
+        flex: 0 1 50%;
+        // margin-leftを80pxで指定するとスマホの時に余白が目立ってしまうため、%で指定する
+        // 80px / 1200px = 6.6667%
+        margin-left: 6.6667%;
+    }
+}
+
+.concept-message-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.concept-message-text {
+    margin-top: 36px;
+
+    @include mq('sm') {
+        margin-top: 20px;
+    }
+}
+
+/* =======================================================================================================
+# feature
+======================================================================================================== */
+.feature {
+    @include mq('sm') {
+        max-width: 340px;
+    }
+}
+
+.feature-list {
+    margin-top: 64px;
+
+    @include mq('sm') {
+        margin-top: 46px;
+    }
+    
+    @include mq('md') {
+        display: flex;
+        justify-content: space-between;
+    }
+
+}
+
+.feature-item {
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 340px / 1200px = 28.3333%
+        flex: 0 0 28.3333%;
+    }
+
+    & + .feature-item {
+        @include mq('sm') {
+            margin-top: 49px;
+        }
+    }
+}
+
+.feature-item-link  {
+    display: block;
+    color: $font-color;
+    background: #fff;
+    // 6桁より多いカラーコードはrgbaで指定する
+    box-shadow: 3px 3px 15px rgba(96, 96, 96, 0.16);
+
+    @include mq('md') {
+        &:hover {
+            .feature-item-picture > img {
+                transform: scale(1.05);
+            }
+        }
+    }
+}
+
+.feature-item-picture {
+    // 画像がhoverした時に.feature-item-pictureからはみ出さないためにoverflow: hidden;にして領域より外は表示されないようにする
+    overflow: hidden;
+
+    > img {
+        transition: transform .4s;
+    }
+}
+
+.feature-item-body {
+    text-align: center;
+    font-weight: bold;
+    padding: 26px 12px;
+}
+
+/* =======================================================================================================
+# about
+======================================================================================================== */
+.about {
+    color: #fff;
+    position: relative;
+    padding: 120px 0;
+
+    @include mq('sm') {
+        background: url(../img/SP/bg.png) center center / cover;
+        padding: 176px 0 52px;
+    }
+
+    @include mq('md') {
+        background: url(../img/PC/bg.png) center center / cover;
+    }
+
+    //  画像を少し暗くするために、position: absolute;で薄い黒い背景をaboutに被せる
+    &::before {
+        content: "";
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, .12);
+    }
+}
+
+.about-inner {
+    // positionを指定した要素は浮く！（static以外）
+    position: relative;
+}
+
+.about-title {
+    font-size: 22px;
+    font-weight: bold;
+
+    @include mq('sm') {
+        font-size: 20px;
+    }
+}
+
+.about-text {
+    margin-top: 28px;
+
+    @include mq('sm') {
+        margin-top: 22px;
+        font-size: 14px;
+        // line-heightの計算
+        // 24 / 14px = 1.7143
+        line-height: 1.7143;
+    }
+}
+
+/* =======================================================================================================
+# products
+======================================================================================================== */
+.products {
+    // 要素の幅が他より小さいため、最大幅で指定しておく
+    max-width: 940px;
+
+    @include mq('sm') {
+        max-width: 340px;
+        padding: 0 58px;
+    }
+}
+
+.products-list {
+    margin-top: 64px;
+
+    @include mq('sm') {
+        margin-top: 48px;
+    }
+
+    @include mq('md') {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.products-item {
+    @include mq('sm') {
+        margin-top: 40px;
+    }
+
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 260px / 940px = 27.6%
+        flex: 0 0 27.6%;
+    }
+}
+
+.products-item-link {
+    display: block;
+    color: $font-color;
+    font-size: 14px;
+
+    @include mq('md') {
+        &:hover {
+            .products-item-picture > img {
+                transform: scale(1.05);
+            }
+        }
+    }
+}
+
+.products-item-picture {
+    // 画像がhoverした時に.products-item-pictureからはみ出さないためにoverflow: hidden;にして領域より外は表示されないようにする
+    overflow: hidden;
+
+    > img {
+        transition: transform .4s;
+    }
+}
+
+.products-item-body {
+    margin-top: 22px;
+}
+
+.products-item-cost {
+    color: #989898;
+    margin-top: 10px;
+}
+
+.products-footer {
+    text-align: center;
+    margin-top: 44px;
+
+    @include mq('sm') {
+        margin-top: 42px;
+    }
+}
+
+/* =======================================================================================================
+# news
+======================================================================================================== */
+.news {
+    // 要素の幅が他より小さいため、最大幅で指定しておく
+    max-width: 1040px;
+
+    @include mq('sm') {
+        padding: 0 32px;
+    }
+}
+
+.news-list {
+    margin-top: 28px;
+
+    @include mq('sm') {
+        margin-top: 25px;
+    }
+}
+
+.news-item {
+    border-bottom: solid 1px #E0E0E0;
+}
+
+.news-item-link {
+    color: $font-color;
+    font-size: 14px;
+    padding: 22px 0;
+    // display: flex;を('md')に入れたので、paddingが適用されるようにdisplay: block;を忘れない！
+    display: block;
+
+    @include mq('md') {
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            .news-item-picture > img {
+                // 順番はtranslateが先、scaleが後
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+    }
+}
+
+.news-item-header {
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        flex: 0 0 260px;
+    }
+}
+
+.news-item-picture {
+    // この画像はユーザー側が指定する画像なので、画角がバラバラな可能性があるため、あらかじめ画角を統一させるようにしたい
+    // ブラウザ幅に合わせて画像のアスペクト比を維持したまま拡大縮小をする際には、padding-topを"%"で指定します。
+    // --画像の切り替えをbackground-imageで指定したい場合
+    // --画像などをiframeを埋め込みたい場合
+    // --画角の違う画像を一定の画角に収めたい場合
+    // 以上の3つはこの方法で指定する必要があります。
+    // ↓使い方↓
+    // １. 比率を固定したい要素をdivなどのタグで囲む
+    // ２. 画角を計算し、対象の要素にpadding-topで指定する
+    // 画角計算は「高さ ÷ 幅 × 100」です。
+    // 今回の場合「160 / 260 * 100 = 61.5385%」になる
+    padding-top: 61.5385%;
+    position: relative;
+    overflow: hidden;
+
+    > img {
+        // position: absolute;がhoverよりも前にあった場合hoverが反映されない
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        transform: translate(-50%, -50%);
+        transition: transform .4s;
+    }
+}
+
+.news-item-body {
+    @include mq('sm') {
+        margin-top: 21px;
+    }
+
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 縮み率を１にすることで幅が100%の幅が余っていなかったら縮めるため
+        flex: 0 1 100%;
+        margin-left: 40px;
+    }
+}
+
+.news-item-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 4px;
+
+    @include mq('sm') {
+        font-size: 16px;
+    }
+}
+
+.news-item-text {
+    color: #888;
+    margin-top: 16px;
+    // line-heightの計算
+    // 24 / 14px = 1.7143
+    line-height: 1.7143;
+}
+
+.news-footer {
+    text-align: center;
+    margin-top: 48px;
+}
+
+
+/* =======================================================================================================
+# concept2
+======================================================================================================== */
+.concept2-inner {
+    @include mq('md') {
+        display: flex;
+        align-items: center;
+        // flex要素を左右反転する
+        flex-direction: row-reverse;
+    }
+}
+
+.concept2-picture {
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        flex: 0 0 50%;
+    }
+}
+
+.concept2-message {
+    @include mq('sm') {
+        margin-top: 34px;
+    }
+
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 縮み率を１にすることで幅が50%の幅が余っていなかったら縮めるため
+        flex: 0 1 50%;
+        // margin-rightを80pxで指定するとスマホの時に余白が目立ってしまうため、%で指定する
+        // 80px / 1200px = 6.6667%
+        margin-right: 6.6667%;
+    }
+}
+
+.concept2-message-title {
+    font-size: 28px;
+    font-weight: bold;
+
+    @include mq('sm') {
+        font-size: 20px;
+    }
+}
+
+.concept2-message-text {
+    margin-top: 36px;
+
+    @include mq('sm') {
+        font-size: 14px;
+        // line-heightの計算
+        // 24 / 14px = 1.7143
+        line-height: 1.7143;
+    }
+}
+
+/* =======================================================================================================
+# contact
+======================================================================================================== */
+.contact {
+    background: url(../img/PC/contact.png) center center / cover;
+    margin-top: 225px;
+    // innerと同じように左右には40pxつけておく
+    padding: 72px 40px 86px;
+
+    @include mq('sm') {
+        margin-top: 92px;
+        padding: 56px 28px;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    textarea {
+        width: 100%;
+        border: 0;
+        font-size: 16px;
+        // 記入するところにpaddingを指定することで、見やすくする
+        padding: .2em .5em;
+        // 6桁より多いカラーコードはrgbaで指定する
+        box-shadow: 5px 6px 15px rgba(96, 96, 96, 0.16);
+    }
+    
+    input[type="text"],
+    input[type="email"] {
+        height: 40px;
+    }
+    
+    textarea {
+        // min-height: 122px;は少なくとも122pxは欲しいと言うこと
+        min-height: 122px;
+        // resize: vertical;はboxの高さの変更はできるが、幅の変更はできない（横幅は固定させる）
+        resize: vertical;
+    }
+
+    .section-title {
+        color: $primary-color;
+    }
+}
+
+.contact-form {
+    margin-top: 56px;
+}
+
+.contact-text {
+    font-size: 14px;
+    letter-spacing: .1em;
+    text-align: center;
+}
+
+.contact-text-inline {
+    font-size: 16px;
+    color: #E7728E;
+}
+
+.contact-list {
+    max-width: 510px;
+    margin: 18px auto 0;
+}
+
+.contact-item {
+    @include mq('md') {
+        display: flex;
+    }
+
+    // 隣接セレクタを使うことで最初の要素にはmargin-topは効かない
+    & + .contact-item {
+        margin-top: 32px;
+    }
+}
+
+.contact-item-title {
+    // 6桁より多いカラーコードはrgbaで指定する
+    background: rgba(62, 161, 209, 0.7);
+    color: #fff;
+    font-size: 18px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    padding-left: 10px;
+    position: relative;
+
+    @include mq('sm') {
+        display: inline-block;
+        font-style: 14px;
+        height: 32px;
+        line-height: 32px;
+        padding: 0 16px;
+    }
+
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 縮み率を１にすることで幅が100%の幅が余っていなかったら縮めるため
+        flex: 0 1 100%;
+
+        &::after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            right: -8px;
+            border-style: solid;
+            border-width: 20px 0 20px 8px;
+            border-color: transparent transparent transparent rgba(62, 161, 209, 0.7);
+        }
+    }
+}
+
+.contact-item-inline {
+    font-size: 12px;
+    color: #E7728E;
+    // vertical-align: super;は親要素の上付き文字の位置に配置する
+    vertical-align: super;
+    // inlineの方にもline-heightがついてしまっているせいで、親要素のtitleの位置もズレてしまったのでinlineのline-heightは1にする
+    line-height: 1;
+
+    @include mq('sm') {
+        font-size: 10px;
+    }
+}
+
+.contact-item-input {
+    @include mq('sm') {
+        margin-top: 3px;
+    }
+
+    @include mq('md') {
+        // flex: 伸び率 縮み率 幅;のようにflexでも要素の幅を指定できる
+        // 先に幅を固定する方を指定する
+        flex: 0 0 320px;
+        // titleの三角の部分も含めた値
+        margin-left: 18px;
+    }
+}
+
+.contact-radio-wrap {
+    // display: flex;にすると要素の幅がinputの幅と同じになってしまうため、inline要素にする
+    display: inline-flex;
+    border: solid 1px #fff;
+    border-radius: 1px;
+    // 6桁より多いカラーコードはrgbaで指定する
+    box-shadow: 5px 5px 15px rgba(96, 96, 96, 0.16);
+}
+
+.contact-radio {
+    position: relative;
+}
+
+.contact-radio-input {
+    // ラジオボタンを消すやり方にdisplay: none;があるが、それだとtabでフォーカスが当たらないため、opacity: 0;で消すやり方を使うが、その場合だと要素が透明になっただけで、残ってしまうため、position: absolute;で浮かせることが必要
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+
+    // チェックされたcontact-radio-inputクラスの次の要素であるcontact-radio-partクラスに対してのスタイル
+    &:checked + .contact-radio-part {
+        background: $primary-color;
+        color: #fff;
+        border-radius: 1px;
+    }
+
+    // このままだとtabによりフォーカスされないため、フォーカスしたときのスタイルを記述する（デベロッパーツールのフォーカス可能な要素の:hoverから:focusにチェックすることでフォーカス時のスタイルがわかる）
+    // フォーカスされたcontact-radio-inputクラスの次の要素であるcontact-radio-partクラスに対してのスタイル
+    &:focus + .contact-radio-part {
+        outline: -webkit-focus-ring-color auto 1px;
+    }
+}
+
+.contact-radio-part {
+    display: block;
+    background: #fff;
+    color: $primary-color;
+    // heightはborderが1pxついているため、40pxから上下のborderの値を引いた数を指定する
+    height: 38px;
+    line-height: 38px;
+    width: 80px;
+    text-align: center;
+    transition: background .4s, color .4s;
+}
+
+.contact-footer {
+    text-align: center;
+    margin-top: 20px;
+
+    @include mq('sm') {
+        margin-top: 14px;
+    }
+}
+
+.contact-privacy {
+    position: relative;
+    // チェックされた時に文字の部分がズレてしまうため、contact-privacy-partクラスを囲っている箱の部分にも同じサイズを指定する
+    display: inline-block;
+    height: 22px;
+    width: 22px;
+    vertical-align: middle;
+}
+
+.contact-privacy-input {
+    // チェックボタンを消すやり方にdisplay: none;があるが、それだとtabでフォーカスが当たらないため、opacity: 0;で消すやり方を使うが、その場合だと要素が透明になっただけで、残ってしまうため、position: absolute;で浮かせることが必要
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+
+    // チェックされたcontact-privacy-inputクラスの次の要素であるcontact-privacy-partクラスに対してのスタイル
+    &:checked + .contact-privacy-part {
+        // 以下のように指定することでチェックマークになる
+        // 画像の差し替えでチェックする必要はない
+        width: 10px;
+        border-top: 0;
+        border-left: 0;
+        background: transparent;
+        transform: rotate(45deg);
+        top: -5px;
+        left: 5px;
+    }
+
+    // このままだとtabによりフォーカスされないため、フォーカスしたときのスタイルを記述する（デベロッパーツールのフォーカス可能な要素の:hoverから:focusにチェックすることでフォーカス時のスタイルがわかる）
+    // フォーカスされたcontact-privacy-inputクラスの次の要素であるcontact-privacy-partクラスに対してのスタイル
+    &:focus + .contact-privacy-part {
+        outline: -webkit-focus-ring-color auto 1px;
+    }
+
+    // チェックされた時のフォーカスは見栄え的にいらないので消す
+    &:checked:focus + .contact-privacy-part {
+        outline: none;
+    }
+}
+
+.contact-privacy-part {
+    display: inline-block;
+    height: 22px;
+    width: 22px;
+    border: solid 1px $primary-color;
+    background: #fff;
+    // 元の状態をtop: 0;left: 0;の状態にしておき、チェックされた時に上にズラすことで、チェックマークが文字と同じ高さになる
+    top: 0;
+    left: 0;
+    position: absolute;
+    // ここは変化する項目が多いのでtransition: all .2s;にする
+    transition: all .2s;
+}
+
+.contact-privacy-link {
+    color: $primary-color;
+    text-decoration: underline;
+}
+
+.contact-footer-submit {
+    margin-top: 46px;
+
+    @include mq('sm') {
+        margin-top: 24px;
+    }
+}
+
+.contact-message {
+    text-align: center;
+    margin-top: 60px;
+    display: none;
+
+    &.-error {
+        color: #f00;
+    }
+}
+
+
+
+
+
+
